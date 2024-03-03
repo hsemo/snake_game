@@ -3,21 +3,22 @@ let ctx;
 
 let defaultFillStyle = 'black';
 
+// direction variables
+let xmove = 1;
+let ymove = 0;
+
 // snake head x and y
 let hx = 0;
 let hy = 0;
 // snake body with head at 0 index
-let snake = [[0,0]]
+let snake = [[0, 0]];
 
 // snake head width height
 let hw = 20;
-let hh = 20
+let hh = 20;
 
-// direction variables
-let xmove = 1;
-let ymove = 0;
 // steps in pixels, how much pixels the snake will move in the any direction
-let steps = 2;
+let st = 2;
 
 // fruit x and y
 // let fx = Math.random() * canvas.width;
@@ -25,7 +26,16 @@ let steps = 2;
 
 // keypress detection
 let key;
+// let keyQueue = [];
 let keyPress = false;
+
+// pausing and resuming the game
+let gamePause = false;
+
+// game over indicator
+let gameOver = false;
+
+let score = 0;
 
 // frame rate calculations
 let fps = 30;
@@ -34,47 +44,102 @@ let then = Date.now();
 let interval = 1000/fps;
 let delta;
 
-function clearHead(x,y){
-  // clearing previous head
+// snake class
+// class Snake {
+//   constructor(){
+//     .
+//   }
+// }
+
+function clearRect(x,y){
+  // clearing rectangle starting from x, y coords
+  ctx.clearRect(x, y, hw, hh);
+}
+
+function moveSnakeBody(){
+
+  for (let i=snake.length-1; i>0; i--){
+    // snake[i][0] = snake[i-1][0] - ((hw - st) * snake[i-1][2]);
+    // snake[i][1] = snake[i-1][1] - ((hh - st) * snake[i-1][3]);
+    snake[i][0] = snake[i-1][0];
+    snake[i][1] = snake[i-1][1];
+  }
+}
+
+function drawSnake(){
+  for(let i=0; i<snake.length; i++){
+    ctx.beginPath();
+    ctx.rect(snake[i][0], snake[i][1], hw, hh);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+  }
+
+  // changing snake head's color by drawing it again
   ctx.beginPath();
-  ctx.rect(x, y, hw, hh);
+  ctx.rect(snake[0][0], snake[0][1], hw, hh);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+}
+
+function clearFruit(){
+  // clearRect(fx, fy);
+  ctx.beginPath();
+  ctx.arc(fx, fy, 10, 0 * Math.PI, 2 * Math.PI);
   ctx.fillStyle = defaultFillStyle;
   ctx.fill();
 }
 
-function update(){
-  if (keyPress){
-    if(key == 'ArrowUp' && ymove != 1){
-      ymove = -1;
-      xmove = 0;
-    } else if(key == 'ArrowDown' && ymove != -1){
-      ymove = 1;
-      xmove = 0;
-    } else if(key == 'ArrowLeft' && xmove != 1){
-      ymove = 0;
-      xmove = -1;
-    } else if(key == 'ArrowRight' && xmove != -1){
-      ymove = 0;
-      xmove = 1;
-    } else if(key == 'a'){
-      snake.push([hx,hy])
+function newFruit(){
+  // random location for fruits
+  do{
+    fx = Math.floor(Math.random() * canvas.width);
+    fy = Math.floor(Math.random() * canvas.height);
+  } while(snake.some(({bx,by}) => (fx > bx && fx < bx + hw) && (fy > by && fy < by + hh)))
+}
+
+function drawFruit(){
+  ctx.beginPath();
+  // ctx.rect(fx, fy, hw, hh);
+  ctx.arc(fx, fy, 8, 0 * Math.PI, 2 * Math.PI);
+  ctx.fillStyle = 'green';
+  ctx.fill();
+}
+
+function snakeToSnakeCollision(){
+  let head = "" + [hx, hy];
+  for (const body of snake.slice(1)) {
+    if(head == body){
+      gameOver = true;
     }
-    keyPress = false;
   }
+}
 
-  for (let i=snake.length-1; i>0; i--){
-    clearHead(snake[i][0], snake[i][1]);
-    snake[i][0] = snake[i-1][0];
-    snake[i][1] = snake[i-1][1];
+function snakeToFruitCollision(){
+  // let cof = [fx + (hw/2), fy + (hh/2)];
+  let cof = [fx, fy];
+  if((cof[0] > hx && cof[0] < hx + hw) && (cof[1] > hy && cof[1] < hy + hh)){
+    newFruit();
+
+    // 5 times so the snake grows according tho it's width and moves smoothly
+    snake.push([hx, hy]);
+    snake.push([hx, hy]);
+    snake.push([hx, hy]);
+    snake.push([hx, hy]);
+    snake.push([hx, hy]);
+
+    score++;
   }
-  clearHead(snake[0][0], snake[0][1]);
-  // clearHead(hx, hy);
+}
 
-  hx += xmove * steps;
-  hy += ymove * steps;
+function update(){
+  // clearing the whole canvas
+  // clearFruit();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  snake[0][0] = hx;
-  snake[0][1] = hy;
+  // changing the snake head's coords hypothetically
+  // for collision detection
+  hx += xmove * st;
+  hy += ymove * st;
 
   // collision detection with walls
   if(hx + hw <= 0) {
@@ -87,23 +152,76 @@ function update(){
     hy = 0;
   }
 
-  for(let i=0; i<snake.length; i++){
-    ctx.beginPath();
-    ctx.rect(snake[i][0], snake[i][1], hw, hh);
-    ctx.fillStyle = 'red';
-    ctx.fill();
+  snakeToSnakeCollision();
+  snakeToFruitCollision();
+
+  // moving snake body before the head
+  moveSnakeBody();
+
+  // changing snake head's coords and direction
+  snake[0] = [hx, hy];
+
+  drawFruit();
+  drawSnake();
+}
+
+function detectKeyPress(){
+  if (keyPress){
+    // let key = keyQueue[0];
+
+    if(key == 'a'){
+      snake.push([hx, hy])
+      keyPress = false;
+      return;
+    }
+    else if(key == ' '){
+      gamePause = !gamePause;
+      keyPress = false;
+      return;
+    }
+    else if(key == 'ArrowUp' && ymove != 1){
+      ymove = -1;
+      xmove = 0;
+    } else if(key == 'ArrowDown' && ymove != -1){
+      ymove = 1;
+      xmove = 0;
+    } else if(key == 'ArrowLeft' && xmove != 1){
+      ymove = 0;
+      xmove = -1;
+    } else if(key == 'ArrowRight' && xmove != -1){
+      ymove = 0;
+      xmove = 1;
+    }
+
+    keyPress = false;
+
+    // after changing the direction move snakeHead width or height ahead
+    // so the snakeHead duesn't bump into it's body after immediate
+    // direction change
+    // hx += xmove * (hw - st);
+    // hy += ymove * (hh - st);
+
   }
 }
 
 function main(){
-  window.requestAnimationFrame(main);
+  if(!gameOver) {
+    window.requestAnimationFrame(main);
+  }
 
   now = Date.now();
   delta = now - then;
-  if(delta > interval){
+
+  // detecting a keypress
+  detectKeyPress();
+
+  if( !gamePause && delta > interval ){
     then = now - (delta % interval);
+
+    // updating the game frame
     update();
   }
+
 }
 
 function setup(){
@@ -121,9 +239,12 @@ function setup(){
 
   // adding keyboard event handling
   document.addEventListener('keydown', (event) => {
+    // keyQueue.push(event.key);
     key = event.key;
     keyPress = true;
   });
+
+  newFruit();
 }
 
 // initialize the canvas and context when the document is ready

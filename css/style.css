@@ -20,4 +20,5 @@ html, body {
   display: block;
   /* border: 1px solid #000000; */
   margin: auto;
+  background-color: black;
 }
