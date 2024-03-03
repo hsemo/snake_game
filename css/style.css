@@ -9,16 +9,23 @@ html, body {
 }
 
 #container {
-  display: flex;
+  display: block;
   height: 100%;
   width: 100%;
   justify-content: center;
   background-color: #fff;
 }
 
-#root {
+#canvas {
   display: block;
-  /* border: 1px solid #000000; */
+  /* position: absolute; */
+  /* bottom: 0px; */
+  /* right: 0px; */
   margin: auto;
   background-color: black;
+}
+
+#score {
+  color: #323232;
+  text-align: center;
 }

@@ -20,10 +20,6 @@ let hh = 20;
 // steps in pixels, how much pixels the snake will move in the any direction
 let st = 2;
 
-// fruit x and y
-// let fx = Math.random() * canvas.width;
-// let fy = Math.random() * canvas.height;
-
 // keypress detection
 let key;
 // let keyQueue = [];
@@ -38,18 +34,12 @@ let gameOver = false;
 let score = 0;
 
 // frame rate calculations
-let fps = 30;
+let fps = 100;
 let now;
 let then = Date.now();
 let interval = 1000/fps;
 let delta;
 
-// snake class
-// class Snake {
-//   constructor(){
-//     .
-//   }
-// }
 
 function clearRect(x,y){
   // clearing rectangle starting from x, y coords
@@ -59,8 +49,6 @@ function clearRect(x,y){
 function moveSnakeBody(){
 
   for (let i=snake.length-1; i>0; i--){
-    // snake[i][0] = snake[i-1][0] - ((hw - st) * snake[i-1][2]);
-    // snake[i][1] = snake[i-1][1] - ((hh - st) * snake[i-1][3]);
     snake[i][0] = snake[i-1][0];
     snake[i][1] = snake[i-1][1];
   }
@@ -114,20 +102,27 @@ function snakeToSnakeCollision(){
   }
 }
 
+function updateScore(){
+  score++;
+  document.getElementById('score').innerHTML = 'Score: ' + score;
+  // increasing speed according to score
+  if(score % 10 == 0){
+    st++;
+  }
+}
+
 function snakeToFruitCollision(){
   // let cof = [fx + (hw/2), fy + (hh/2)];
   let cof = [fx, fy];
   if((cof[0] > hx && cof[0] < hx + hw) && (cof[1] > hy && cof[1] < hy + hh)){
     newFruit();
 
-    // 5 times so the snake grows according tho it's width and moves smoothly
-    snake.push([hx, hy]);
-    snake.push([hx, hy]);
-    snake.push([hx, hy]);
-    snake.push([hx, hy]);
-    snake.push([hx, hy]);
+    // hw/st times so the snake grows according tho it's width and moves smoothly
+    for(let i=0; i<Math.floor(hw/st); i++){
+      snake.push([hx, hy]);
+    }
 
-    score++;
+    updateScore();
   }
 }
 
@@ -167,8 +162,6 @@ function update(){
 
 function detectKeyPress(){
   if (keyPress){
-    // let key = keyQueue[0];
-
     if(key == 'a'){
       snake.push([hx, hy])
       keyPress = false;
@@ -195,12 +188,6 @@ function detectKeyPress(){
 
     keyPress = false;
 
-    // after changing the direction move snakeHead width or height ahead
-    // so the snakeHead duesn't bump into it's body after immediate
-    // direction change
-    // hx += xmove * (hw - st);
-    // hy += ymove * (hh - st);
-
   }
 }
 
@@ -225,7 +212,7 @@ function main(){
 }
 
 function setup(){
-  canvas = document.getElementById('root');
+  canvas = document.getElementById('canvas');
   canvas.width = 600;
   canvas.height = 600;
   ctx = canvas.getContext('2d');
@@ -239,7 +226,6 @@ function setup(){
 
   // adding keyboard event handling
   document.addEventListener('keydown', (event) => {
-    // keyQueue.push(event.key);
     key = event.key;
     keyPress = true;
   });
