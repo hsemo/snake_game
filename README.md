@@ -1,5 +1,5 @@
 <h1 align="center"> 🐍 Snake Game</h1>
-<p align="center">Classic snake game that's really satisfying to play.</p>
+<p align="center">Classic snake game.</p>
 
 ### How to play
 - Go to the [game url](https://snake-hsemo.w3spaces.com) and start playing. You can move the snake around
