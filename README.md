@@ -1,7 +1,7 @@
 <h1 align="center"> 🐍 Snake Game</h1>
 <p align="center">Classic snake game.</p>
 
-### 🎯 How to play
+### ❓ How to play
 - Go to the [game url](https://snake-hsemo.w3spaces.com) and start playing. You can move the snake around
 via the `arrow_keys`. Every time your score becomes a multiple of 10 the
 speed of the snake will increase and when the snake bites itself it's
