@@ -1,0 +1,91 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.main {
+  display: block;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  background-color: #fff;
+  text-align: center;
+}
+
+canvas {
+  display: block;
+  margin: auto;
+  background-color: black;
+}
+
+.score {
+  color: #323232;
+  font-size: 2em;
+  text-align: center;
+}
+
+.game-over {
+  float: left;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ff0404;
+  font-size: 60px;
+  text-align: center;
+}
+
+.not-game-over, .not-game-over .resume-btn {
+  visibility: hidden;
+}
+
+.restart-btn {
+  box-sizing: border-box;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff0404;
+  padding: 5px 10px;
+  font-size: 20px;
+}
+
+.restart-btn:hover {
+  background-color: #0f0;
+  cursor: pointer;
+  transition: .5s;
+}
+
+.menu {
+
+}
+
+.resume, .pause {
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: none;
+  padding: 5px 10px;
+  font-size: 20px;
+  margin: 10px;
+  transition: .3s;
+}
+
+.resume {
+  background-color: #7fff7f;
+}
+
+.pause {
+  background-color: #ff9696;
+}
+
+.resume:hover, .pause:hover {
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
+}
+
+.resume:active, .pause:active {
+  opacity: 80%;
+}
